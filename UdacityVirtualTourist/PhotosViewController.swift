@@ -9,17 +9,20 @@
 import UIKit
 import MapKit
 
-class PhotosViewController: UIViewController {
+class PhotosViewController: CoreDataViewController {
 
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var newCollectionButton: UIButton!
     
-    let annotation: MKAnnotation? = nil
+    var annotation: MKAnnotation? = nil
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
+        if self.annotation != nil {
+            self.mapView.addAnnotation(self.annotation!)
+            self.mapView.centerCoordinate = self.annotation!.coordinate
+        }
     }
 
     @IBAction func goBack(_ sender: Any) {

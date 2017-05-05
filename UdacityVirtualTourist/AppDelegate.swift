@@ -12,10 +12,21 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
+    let stack = CoreDataStack(modelName: "Model")!
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        
+        stack.autoSave(60)
+        
+        
+//        // Remove previous stuff (if any)
+//        do {
+//            try stack.dropAllData()
+//        } catch {
+//            print("Error droping all objects in DB")
+//        }
+        
         return true
     }
 

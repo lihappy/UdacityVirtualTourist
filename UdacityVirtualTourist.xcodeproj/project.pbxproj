@@ -7,6 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5105F8C61EBC667600BF7150 /* Photo+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5105F8C21EBC667600BF7150 /* Photo+CoreDataClass.swift */; };
+		5105F8C71EBC667600BF7150 /* Photo+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5105F8C31EBC667600BF7150 /* Photo+CoreDataProperties.swift */; };
+		5105F8C81EBC667600BF7150 /* Pin+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5105F8C41EBC667600BF7150 /* Pin+CoreDataClass.swift */; };
+		5105F8C91EBC667600BF7150 /* Pin+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5105F8C51EBC667600BF7150 /* Pin+CoreDataProperties.swift */; };
+		5105F8CC1EBC6F7400BF7150 /* CoreDataViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5105F8CB1EBC6F7400BF7150 /* CoreDataViewController.swift */; };
+		5122D2F31EBC5DBB000D576A /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5122D2F21EBC5DBB000D576A /* CoreDataStack.swift */; };
+		51621C871EBC27E200C34B46 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51621C861EBC27E200C34B46 /* Constants.swift */; };
 		51CC091E1EBB10C30029F7F7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51CC091D1EBB10C30029F7F7 /* AppDelegate.swift */; };
 		51CC09201EBB10C30029F7F7 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51CC091F1EBB10C30029F7F7 /* MapViewController.swift */; };
 		51CC09231EBB10C30029F7F7 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 51CC09211EBB10C30029F7F7 /* Main.storyboard */; };
@@ -18,6 +25,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		5105F8C21EBC667600BF7150 /* Photo+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Photo+CoreDataClass.swift"; path = "UdacityVirtualTourist/Photo+CoreDataClass.swift"; sourceTree = "<group>"; };
+		5105F8C31EBC667600BF7150 /* Photo+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Photo+CoreDataProperties.swift"; path = "UdacityVirtualTourist/Photo+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		5105F8C41EBC667600BF7150 /* Pin+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Pin+CoreDataClass.swift"; path = "UdacityVirtualTourist/Pin+CoreDataClass.swift"; sourceTree = "<group>"; };
+		5105F8C51EBC667600BF7150 /* Pin+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Pin+CoreDataProperties.swift"; path = "UdacityVirtualTourist/Pin+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		5105F8CB1EBC6F7400BF7150 /* CoreDataViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataViewController.swift; sourceTree = "<group>"; };
+		5122D2F21EBC5DBB000D576A /* CoreDataStack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CoreDataStack.swift; path = UdacityVirtualTourist/CoreDataStack.swift; sourceTree = "<group>"; };
+		51621C861EBC27E200C34B46 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		51CC091A1EBB10C30029F7F7 /* UdacityVirtualTourist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UdacityVirtualTourist.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		51CC091D1EBB10C30029F7F7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		51CC091F1EBB10C30029F7F7 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
@@ -27,7 +41,7 @@
 		51CC09291EBB10C30029F7F7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		51CC09301EBB11000029F7F7 /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
 		51CC09321EBB17480029F7F7 /* PhotosViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotosViewController.swift; sourceTree = "<group>"; };
-		51CC09341EBB297F0029F7F7 /* FlickrClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlickrClient.swift; sourceTree = "<group>"; };
+		51CC09341EBB297F0029F7F7 /* FlickrClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FlickrClient.swift; path = UdacityVirtualTourist/FlickrClient.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -41,6 +55,32 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5105F8CA1EBC6C1300BF7150 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				5105F8CB1EBC6F7400BF7150 /* CoreDataViewController.swift */,
+				51CC091F1EBB10C30029F7F7 /* MapViewController.swift */,
+				51CC09321EBB17480029F7F7 /* PhotosViewController.swift */,
+			);
+			name = Controllers;
+			sourceTree = "<group>";
+		};
+		5122D2F11EBC5D93000D576A /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				51621C861EBC27E200C34B46 /* Constants.swift */,
+				51CC092F1EBB11000029F7F7 /* Model.xcdatamodeld */,
+				5122D2F21EBC5DBB000D576A /* CoreDataStack.swift */,
+				5105F8C21EBC667600BF7150 /* Photo+CoreDataClass.swift */,
+				5105F8C31EBC667600BF7150 /* Photo+CoreDataProperties.swift */,
+				5105F8C41EBC667600BF7150 /* Pin+CoreDataClass.swift */,
+				5105F8C51EBC667600BF7150 /* Pin+CoreDataProperties.swift */,
+				51CC09341EBB297F0029F7F7 /* FlickrClient.swift */,
+			);
+			name = Model;
+			path = ..;
+			sourceTree = "<group>";
+		};
 		51CC09111EBB10C30029F7F7 = {
 			isa = PBXGroup;
 			children = (
@@ -61,10 +101,8 @@
 			isa = PBXGroup;
 			children = (
 				51CC091D1EBB10C30029F7F7 /* AppDelegate.swift */,
-				51CC091F1EBB10C30029F7F7 /* MapViewController.swift */,
-				51CC09321EBB17480029F7F7 /* PhotosViewController.swift */,
-				51CC09341EBB297F0029F7F7 /* FlickrClient.swift */,
-				51CC092F1EBB11000029F7F7 /* Model.xcdatamodeld */,
+				5122D2F11EBC5D93000D576A /* Model */,
+				5105F8CA1EBC6C1300BF7150 /* Controllers */,
 				51CC09211EBB10C30029F7F7 /* Main.storyboard */,
 				51CC09241EBB10C30029F7F7 /* Assets.xcassets */,
 				51CC09261EBB10C30029F7F7 /* LaunchScreen.storyboard */,
@@ -147,10 +185,17 @@
 			buildActionMask = 2147483647;
 			files = (
 				51CC09201EBB10C30029F7F7 /* MapViewController.swift in Sources */,
+				5105F8C81EBC667600BF7150 /* Pin+CoreDataClass.swift in Sources */,
 				51CC09351EBB297F0029F7F7 /* FlickrClient.swift in Sources */,
+				5105F8C91EBC667600BF7150 /* Pin+CoreDataProperties.swift in Sources */,
+				5105F8C61EBC667600BF7150 /* Photo+CoreDataClass.swift in Sources */,
 				51CC09331EBB17480029F7F7 /* PhotosViewController.swift in Sources */,
+				5122D2F31EBC5DBB000D576A /* CoreDataStack.swift in Sources */,
 				51CC091E1EBB10C30029F7F7 /* AppDelegate.swift in Sources */,
+				5105F8C71EBC667600BF7150 /* Photo+CoreDataProperties.swift in Sources */,
+				5105F8CC1EBC6F7400BF7150 /* CoreDataViewController.swift in Sources */,
 				51CC09311EBB11000029F7F7 /* Model.xcdatamodeld in Sources */,
+				51621C871EBC27E200C34B46 /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -312,6 +357,7 @@
 				51CC092E1EBB10C30029F7F7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 
@@ -322,7 +368,8 @@
 				51CC09301EBB11000029F7F7 /* Model.xcdatamodel */,
 			);
 			currentVersion = 51CC09301EBB11000029F7F7 /* Model.xcdatamodel */;
-			path = Model.xcdatamodeld;
+			name = Model.xcdatamodeld;
+			path = UdacityVirtualTourist/Model.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
 		};
