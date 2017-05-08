@@ -118,60 +118,8 @@ class FlickrClient: NSObject {
                                                       url: mediaUrl,
                                                   context: (sender.fetchedResultsController?.managedObjectContext)!)
                             photo.pin = pin
-                            
-                            do {
-                              try sender.fetchedResultsController?.managedObjectContext.save()
-                            } catch let error as NSError{
-                                print("save failed")
-                                print(error.description)
-                            }
-//                            sender.fetchedResultsController?.managedObjectContext)!
-//                                try pin.addToPhotos(photo)
-                            
-                            // Get image data
-//                            if let imageData = try? Data(contentsOf: URL(string: mediaUrl)!) {
-//                                photo.imageData = imageData as NSData?
-//                                
-////                                    performUIUpdatesOnMain {
-////                                        self.setUIEnabled(true)
-////                                        self.photoImageView.image = UIImage(data: imageData)
-////                                        self.photoTitleLabel.text = photoTitle ?? "(Untitled)"
-////                                    }
-//                            } else {
-//                                print("Image does not exist at \(mediaUrl)")
-//                            }
-                            
-                            
                         }
-                        
-                        // Save photos with pin?
-                        
-                        
-                        
-                        
-                        
-                        
-//                        let randomPhotoIndex = Int(arc4random_uniform(UInt32(photosArray.count)))
-//                        let photoDictionary = photosArray[randomPhotoIndex] as [String: AnyObject]
-//                        let photoTitle = photoDictionary[Constants.FlickrResponseKeys.Title] as? String
-//                        
-//                        /* GUARD: Does our photo have a key for 'url_m'? */
-//                        guard let imageUrlString = photoDictionary[Constants.FlickrResponseKeys.MediumURL] as? String else {
-//                            displayError("Cannot find key '\(Constants.FlickrResponseKeys.MediumURL)' in \(photoDictionary)")
-//                            return
-//                        }
-//                        
-//                        // if an image exists at the url, set the image and title
-//                        let imageURL = URL(string: imageUrlString)
-//                        if let imageData = try? Data(contentsOf: imageURL!) {
-//                            performUIUpdatesOnMain {
-//                                self.setUIEnabled(true)
-//                                self.photoImageView.image = UIImage(data: imageData)
-//                                self.photoTitleLabel.text = photoTitle ?? "(Untitled)"
-//                            }
-//                        } else {
-//                            displayError("Image does not exist at \(imageURL)")
-//                        }
+                        sender.stack.save()
                     }
                     
                 })
@@ -259,7 +207,7 @@ class FlickrClient: NSObject {
                 sendError("Could not parse the data as JSON: '\(data)'")
                 return
             }
-            print(parsedResult)
+//            print(parsedResult)
             /* GUARD: Did Flickr return an error (stat != ok)? */
             guard let stat = parsedResult[Constants.FlickrResponseKeys.Status] as? String, stat == Constants.FlickrResponseValues.OKStatus else {
                 sendError("Flickr API returned an error. See error code and message in \(parsedResult)")

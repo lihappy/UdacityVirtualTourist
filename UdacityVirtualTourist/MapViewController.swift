@@ -22,7 +22,6 @@ class MapViewController: CoreDataViewController {
         let longPress: UILongPressGestureRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(MapViewController.addAnnotation))
         self.mapView.addGestureRecognizer(longPress)
         
-        let stack = (UIApplication.shared.delegate as! AppDelegate).stack
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Pin")
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "createDate", ascending: true)]
         
@@ -102,34 +101,54 @@ extension MapViewController: MKMapViewDelegate {
         print(view.annotation?.coordinate.latitude ?? 0.0)
         print(view.annotation?.coordinate.longitude ?? 0.0)
         
-        // Create Fetch Request
-        let fr = NSFetchRequest<NSFetchRequestResult>(entityName: "Pin")
+        let currentPin = self.searchPinByLatLon((view.annotation?.coordinate.latitude)!, (view.annotation?.coordinate.longitude)!)
+        guard (currentPin != nil) else {
+            return
+        }
         
-        fr.sortDescriptors = [NSSortDescriptor(key: "createDate", ascending: true)]
+        print(currentPin)
         
-        let latitudePredicate = NSPredicate(format: "latitude = %@", (view.annotation?.coordinate.latitude)!)
-        let longitudePredicate = NSPredicate(format: "longitude = %@", (view.annotation?.coordinate.longitude)!)
-        let andPredicate = NSCompoundPredicate(type: NSCompoundPredicate.LogicalType.and, subpredicates: [latitudePredicate, longitudePredicate])
-        fr.predicate = andPredicate
-
-        // Create FetchedResultsController
+        let fr = NSFetchRequest<NSFetchRequestResult>(entityName: "Photo")
+        fr.sortDescriptors = [NSSortDescriptor(key: "photoId", ascending: true)]
+        
+        let predicate = NSPredicate(format: "pin = %@", currentPin!)
+        fr.predicate = predicate
+        
         let fc = NSFetchedResultsController(fetchRequest: fr, managedObjectContext:fetchedResultsController!.managedObjectContext, sectionNameKeyPath: nil, cacheName: nil)
         
-        // Inject it into the notesVC
         photosVC.fetchedResultsController = fc
         
-        let pins = fetchedResultsController!.fetchedObjects
-        if (pins != nil && pins!.count > 0) {
-            let pin = pins![0] as! Pin
-            photosVC.pin = pin
-            if (pin.photos == nil || (pin.photos?.count)! < 1) {
-                FlickrClient.sharedInstance().searchByLocation(pin, self)
-            }
-        } else {
-            print("error. there's no pin")
+        
+        photosVC.pin = currentPin
+        if (currentPin!.photos == nil || (currentPin!.photos?.count)! < 1) {
+            FlickrClient.sharedInstance().searchByLocation(currentPin!, self)
         }
         
         show(photosVC, sender: true)
+    }
+    
+    func searchPinByLatLon(_ latitude: Double, _ longitude: Double) -> Pin? {
+        let fr = NSFetchRequest<NSFetchRequestResult>(entityName: "Pin")
+        fr.sortDescriptors = [NSSortDescriptor(key: "createDate", ascending: true)]
+        let pinPredicate = NSPredicate(format: "latitude = %lf AND longitude = %lf", latitude, longitude)
+        fr.predicate = pinPredicate
+        
+        let frc = NSFetchedResultsController(fetchRequest: fr, managedObjectContext: stack.context, sectionNameKeyPath: nil, cacheName: nil)
+        do {
+            try frc.performFetch()
+        } catch let error as NSError {
+            print(error.localizedDescription)
+        }
+        
+        guard let pins = frc.fetchedObjects else {
+            return nil
+        }
+        
+        guard pins.count > 0 else {
+            return nil
+        }
+        
+        return pins[0] as? Pin
     }
     
     

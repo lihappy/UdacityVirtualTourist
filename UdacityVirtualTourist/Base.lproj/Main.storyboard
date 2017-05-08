@@ -78,19 +78,28 @@
                                 <rect key="frame" x="0.0" y="194" width="375" height="443"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="78w-oo-6AL">
-                                    <size key="itemSize" width="50" height="50"/>
+                                    <size key="itemSize" width="130" height="130"/>
                                     <size key="headerReferenceSize" width="0.0" height="0.0"/>
                                     <size key="footerReferenceSize" width="0.0" height="0.0"/>
                                     <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 </collectionViewFlowLayout>
                                 <cells>
-                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="cyZ-Lv-nR0">
-                                        <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="cell" id="cyZ-Lv-nR0" customClass="photoCollectionViewCell" customModule="UdacityVirtualTourist" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="0.0" width="130" height="130"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                                            <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="130" height="130"/>
                                             <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="placeholder" translatesAutoresizingMaskIntoConstraints="NO" id="b2s-SX-pLJ">
+                                                    <rect key="frame" x="0.0" y="0.0" width="130" height="130"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                </imageView>
+                                            </subviews>
                                         </view>
+                                        <connections>
+                                            <outlet property="imageView" destination="b2s-SX-pLJ" id="qKz-Q3-Xfq"/>
+                                        </connections>
                                     </collectionViewCell>
                                 </cells>
                             </collectionView>
@@ -124,6 +133,8 @@
                     </view>
                     <navigationItem key="navigationItem" id="0Qe-WQ-o8e"/>
                     <connections>
+                        <outlet property="collectioinView" destination="zLK-6l-d4d" id="tae-tN-oS9"/>
+                        <outlet property="flowLayout" destination="78w-oo-6AL" id="cPL-TI-sYC"/>
                         <outlet property="mapView" destination="UAF-up-Ofb" id="pgk-Ud-b77"/>
                         <outlet property="newCollectionButton" destination="rHY-Ar-oF8" id="ejG-SA-RBe"/>
                     </connections>
@@ -133,4 +144,7 @@
             <point key="canvasLocation" x="864.79999999999995" y="123.68815592203899"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="placeholder" width="125" height="125"/>
+    </resources>
 </document>
