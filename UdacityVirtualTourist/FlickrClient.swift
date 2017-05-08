@@ -21,21 +21,21 @@ class FlickrClient: NSObject {
         return Singleton.sharedInstance
     }
     
-    func searchByLatLon(_ latitude: Double, _ longitude: Double, _ sender: AnyObject) {
+    func searchByLocation(_ pin: Pin, _ sender: MapViewController) {
+        
         let methodParameters = [
             Constants.FlickrParameterKeys.Method: Constants.FlickrParameterValues.SearchMethod,
             Constants.FlickrParameterKeys.APIKey: Constants.FlickrParameterValues.APIKey,
-            Constants.FlickrParameterKeys.BoundingBox: bboxString(latitude, longitude),
+            Constants.FlickrParameterKeys.BoundingBox: bboxString(pin.latitude, pin.longitude),
             Constants.FlickrParameterKeys.SafeSearch: Constants.FlickrParameterValues.UseSafeSearch,
             Constants.FlickrParameterKeys.Extras: Constants.FlickrParameterValues.MediumURL,
             Constants.FlickrParameterKeys.Format: Constants.FlickrParameterValues.ResponseFormat,
             Constants.FlickrParameterKeys.NoJSONCallback: Constants.FlickrParameterValues.DisableJSONCallback
         ]
-//        displayImageFromFlickrBySearch(methodParameters as [String:AnyObject])
         
-//        let session = URLSession.shared
         let request = URLRequest(url: flickrURLFromParameters(methodParameters as [String : AnyObject]))
         
+        // Request total pages first
         let _ = self.taskForHttpRequest(request) { (result, error) in
             
             if (error != nil) {
@@ -53,17 +53,126 @@ class FlickrClient: NSObject {
                 var methodParametersWithPageNumber = methodParameters
                 methodParametersWithPageNumber[Constants.FlickrParameterKeys.Page] = "\(randomPage)"
                 
+                // Then request images of a random page
                 let requestForRandomImages = URLRequest(url: self.flickrURLFromParameters(methodParametersWithPageNumber as [String : AnyObject]))
                 let _ = self.taskForHttpRequest(requestForRandomImages, completionHandlerForPOST: { (randomResult, randomError) in
-                    if (error != nil) {
+                    
+                    guard (error == nil) else {
                         showSimpleErrorAlert(_message: (error?.localizedDescription)!, _sender: sender)
+                        return
                     }
-                    if ( result == nil) {
+                    guard (result != nil) else {
                         showSimpleErrorAlert(_message: "No photos", _sender: sender)
+                        return
                     }
                     
                     // Random select 50 of the photo array
+                    guard var photosArray = result![Constants.FlickrResponseKeys.Photo] as? [[String: AnyObject]] else {
+                        showSimpleErrorAlert(_message: "No photos", _sender: sender)
+                        return
+                    }
                     
+                    if photosArray.count == 0 {
+                        showSimpleErrorAlert(_message: "No photos", _sender: sender)
+                        return
+                    } else {
+                        var selectedArray: [[String: AnyObject]]
+                        if (photosArray.count <= Constants.Flickr.imageCount) {
+                            selectedArray = photosArray
+                        } else {
+                            selectedArray = photosArray.shuffle().choose(Constants.Flickr.imageCount)
+                        }
+                        
+                        for photoItem in selectedArray {
+                            
+                            print("\(photoItem)")
+
+                            guard let photoId = photoItem[Constants.FlickrResponseKeys.Id] as? String else {
+                                print("Invalid photoId")
+                                continue
+                            }
+                            
+                            guard let farmId = photoItem[Constants.FlickrResponseKeys.Farm] as? Int else {
+                                print("Invalid farmId")
+                                continue
+                            }
+                            
+                            guard let serverId = photoItem[Constants.FlickrResponseKeys.Server] as? String else {
+                                print("Invalid serverId")
+                                continue
+                            }
+                            
+                            guard let secret = photoItem[Constants.FlickrResponseKeys.Secret] as? String else {
+                                print("Invalid secret")
+                                continue
+                            }
+                            guard let mediaUrl = photoItem[Constants.FlickrResponseKeys.MediumURL] as? String else {
+                                print("Invalid mediaUrl")
+                                continue
+                            }
+                            
+                            let photo = Photo(photoId: Int64(photoId)!,
+                                                   farmId: Int64(farmId),
+                                                 serverId: Int64(serverId)!,
+                                                   secret: secret,
+                                                      url: mediaUrl,
+                                                  context: (sender.fetchedResultsController?.managedObjectContext)!)
+                            photo.pin = pin
+                            
+                            do {
+                              try sender.fetchedResultsController?.managedObjectContext.save()
+                            } catch let error as NSError{
+                                print("save failed")
+                                print(error.description)
+                            }
+//                            sender.fetchedResultsController?.managedObjectContext)!
+//                                try pin.addToPhotos(photo)
+                            
+                            // Get image data
+//                            if let imageData = try? Data(contentsOf: URL(string: mediaUrl)!) {
+//                                photo.imageData = imageData as NSData?
+//                                
+////                                    performUIUpdatesOnMain {
+////                                        self.setUIEnabled(true)
+////                                        self.photoImageView.image = UIImage(data: imageData)
+////                                        self.photoTitleLabel.text = photoTitle ?? "(Untitled)"
+////                                    }
+//                            } else {
+//                                print("Image does not exist at \(mediaUrl)")
+//                            }
+                            
+                            
+                        }
+                        
+                        // Save photos with pin?
+                        
+                        
+                        
+                        
+                        
+                        
+//                        let randomPhotoIndex = Int(arc4random_uniform(UInt32(photosArray.count)))
+//                        let photoDictionary = photosArray[randomPhotoIndex] as [String: AnyObject]
+//                        let photoTitle = photoDictionary[Constants.FlickrResponseKeys.Title] as? String
+//                        
+//                        /* GUARD: Does our photo have a key for 'url_m'? */
+//                        guard let imageUrlString = photoDictionary[Constants.FlickrResponseKeys.MediumURL] as? String else {
+//                            displayError("Cannot find key '\(Constants.FlickrResponseKeys.MediumURL)' in \(photoDictionary)")
+//                            return
+//                        }
+//                        
+//                        // if an image exists at the url, set the image and title
+//                        let imageURL = URL(string: imageUrlString)
+//                        if let imageData = try? Data(contentsOf: imageURL!) {
+//                            performUIUpdatesOnMain {
+//                                self.setUIEnabled(true)
+//                                self.photoImageView.image = UIImage(data: imageData)
+//                                self.photoTitleLabel.text = photoTitle ?? "(Untitled)"
+//                            }
+//                        } else {
+//                            displayError("Image does not exist at \(imageURL)")
+//                        }
+                    }
                     
                 })
             }
@@ -182,4 +291,23 @@ func showSimpleErrorAlert(_message: String, _sender: AnyObject) {
         alertController.addAction(alertAction);
         _sender.present(alertController, animated: true, completion: nil);
     }
+}
+
+extension Array {
+    /// Returns an array containing this sequence shuffled
+    var shuffled: Array {
+        var elements = self
+        return elements.shuffle()
+    }
+    /// Shuffles this sequence in place
+    @discardableResult
+    mutating func shuffle() -> Array {
+        indices.dropLast().forEach {
+            guard case let index = Int(arc4random_uniform(UInt32(count - $0))) + $0, index != $0 else { return }
+            swap(&self[$0], &self[index])
+        }
+        return self
+    }
+    var chooseOne: Element { return self[Int(arc4random_uniform(UInt32(count)))] }
+    func choose(_ n: Int) -> Array { return Array(shuffled.prefix(n)) }
 }

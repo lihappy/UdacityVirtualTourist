@@ -21,7 +21,7 @@ struct Constants {
         static let SearchLatRange = (-90.0, 90.0)
         static let SearchLonRange = (-180.0, 180.0)
         
-        static let imageCount = 50
+        static let imageCount = 3
     }
     
     // MARK: Flickr Parameter Keys
@@ -61,6 +61,11 @@ struct Constants {
         static let MediumURL = "url_m"
         static let Pages = "pages"
         static let Total = "total"
+        
+        static let Farm = "farm"
+        static let Server = "server"
+        static let Id = "id"
+        static let Secret = "secret"
     }
     
     // MARK: Flickr Response Values

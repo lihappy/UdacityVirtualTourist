@@ -46,6 +46,8 @@ class MapViewController: CoreDataViewController {
             
             mapView.addAnnotations(annotations)
         }
+        
+        print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
     
     }
     
@@ -91,11 +93,41 @@ extension MapViewController: MKMapViewDelegate {
     }
     
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+        // Make the annotation be selectable again
+        mapView.deselectAnnotation(view.annotation, animated: false)
+        
         let photosVC = self.storyboard?.instantiateViewController(withIdentifier: "photosViewController") as! PhotosViewController
         photosVC.annotation = view.annotation
         
         print(view.annotation?.coordinate.latitude ?? 0.0)
         print(view.annotation?.coordinate.longitude ?? 0.0)
+        
+        // Create Fetch Request
+        let fr = NSFetchRequest<NSFetchRequestResult>(entityName: "Pin")
+        
+        fr.sortDescriptors = [NSSortDescriptor(key: "createDate", ascending: true)]
+        
+        let latitudePredicate = NSPredicate(format: "latitude = %@", (view.annotation?.coordinate.latitude)!)
+        let longitudePredicate = NSPredicate(format: "longitude = %@", (view.annotation?.coordinate.longitude)!)
+        let andPredicate = NSCompoundPredicate(type: NSCompoundPredicate.LogicalType.and, subpredicates: [latitudePredicate, longitudePredicate])
+        fr.predicate = andPredicate
+
+        // Create FetchedResultsController
+        let fc = NSFetchedResultsController(fetchRequest: fr, managedObjectContext:fetchedResultsController!.managedObjectContext, sectionNameKeyPath: nil, cacheName: nil)
+        
+        // Inject it into the notesVC
+        photosVC.fetchedResultsController = fc
+        
+        let pins = fetchedResultsController!.fetchedObjects
+        if (pins != nil && pins!.count > 0) {
+            let pin = pins![0] as! Pin
+            photosVC.pin = pin
+            if (pin.photos == nil || (pin.photos?.count)! < 1) {
+                FlickrClient.sharedInstance().searchByLocation(pin, self)
+            }
+        } else {
+            print("error. there's no pin")
+        }
         
         show(photosVC, sender: true)
     }

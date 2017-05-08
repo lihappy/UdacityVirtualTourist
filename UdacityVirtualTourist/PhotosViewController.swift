@@ -15,6 +15,7 @@ class PhotosViewController: CoreDataViewController {
     @IBOutlet weak var newCollectionButton: UIButton!
     
     var annotation: MKAnnotation? = nil
+    var pin: Pin? = nil
     
     override func viewDidLoad() {
         super.viewDidLoad()
