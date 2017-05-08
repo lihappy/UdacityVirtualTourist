@@ -133,7 +133,7 @@
                     </view>
                     <navigationItem key="navigationItem" id="0Qe-WQ-o8e"/>
                     <connections>
-                        <outlet property="collectioinView" destination="zLK-6l-d4d" id="tae-tN-oS9"/>
+                        <outlet property="collectionView" destination="zLK-6l-d4d" id="vQ9-gK-32J"/>
                         <outlet property="flowLayout" destination="78w-oo-6AL" id="cPL-TI-sYC"/>
                         <outlet property="mapView" destination="UAF-up-Ofb" id="pgk-Ud-b77"/>
                         <outlet property="newCollectionButton" destination="rHY-Ar-oF8" id="ejG-SA-RBe"/>

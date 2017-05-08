@@ -14,8 +14,6 @@ class MapViewController: CoreDataViewController {
 
     @IBOutlet weak var mapView: MKMapView!
     
-    let stack = (UIApplication.shared.delegate as! AppDelegate).stack
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -106,7 +104,6 @@ extension MapViewController: MKMapViewDelegate {
             return
         }
         
-        print(currentPin)
         
         let fr = NSFetchRequest<NSFetchRequestResult>(entityName: "Photo")
         fr.sortDescriptors = [NSSortDescriptor(key: "photoId", ascending: true)]
@@ -121,7 +118,7 @@ extension MapViewController: MKMapViewDelegate {
         
         photosVC.pin = currentPin
         if (currentPin!.photos == nil || (currentPin!.photos?.count)! < 1) {
-            FlickrClient.sharedInstance().searchByLocation(currentPin!, self)
+            FlickrClient.sharedInstance().searchByLocation(currentPin!, (self.fetchedResultsController?.managedObjectContext)!)
         }
         
         show(photosVC, sender: true)

@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreData
 
 class FlickrClient: NSObject {
     
@@ -21,7 +22,7 @@ class FlickrClient: NSObject {
         return Singleton.sharedInstance
     }
     
-    func searchByLocation(_ pin: Pin, _ sender: MapViewController) {
+    func searchByLocation(_ pin: Pin, _ context: NSManagedObjectContext) {
         
         let methodParameters = [
             Constants.FlickrParameterKeys.Method: Constants.FlickrParameterValues.SearchMethod,
@@ -39,10 +40,14 @@ class FlickrClient: NSObject {
         let _ = self.taskForHttpRequest(request) { (result, error) in
             
             if (error != nil) {
-                showSimpleErrorAlert(_message: (error?.localizedDescription)!, _sender: sender)
+                print(error?.localizedDescription)
+//                showSimpleErrorAlert(_message: (error?.localizedDescription)!, _sender: sender)
+                return
             }
             if ( result == nil) {
-                showSimpleErrorAlert(_message: "No photos", _sender: sender)
+//                print("")
+//                showSimpleErrorAlert(_message: "No photos", _sender: sender)
+                return
             }
             
             let totalPages = result?[Constants.FlickrResponseKeys.Pages] as? Int
@@ -55,25 +60,25 @@ class FlickrClient: NSObject {
                 
                 // Then request images of a random page
                 let requestForRandomImages = URLRequest(url: self.flickrURLFromParameters(methodParametersWithPageNumber as [String : AnyObject]))
-                let _ = self.taskForHttpRequest(requestForRandomImages, completionHandlerForPOST: { (randomResult, randomError) in
+                let _ = self.taskForHttpRequest(requestForRandomImages, completionHandler: { (randomResult, randomError) in
                     
                     guard (error == nil) else {
-                        showSimpleErrorAlert(_message: (error?.localizedDescription)!, _sender: sender)
+//                        showSimpleErrorAlert(_message: (error?.localizedDescription)!, _sender: sender)
                         return
                     }
                     guard (result != nil) else {
-                        showSimpleErrorAlert(_message: "No photos", _sender: sender)
+//                        showSimpleErrorAlert(_message: "No photos", _sender: sender)
                         return
                     }
                     
                     // Random select 50 of the photo array
                     guard var photosArray = result![Constants.FlickrResponseKeys.Photo] as? [[String: AnyObject]] else {
-                        showSimpleErrorAlert(_message: "No photos", _sender: sender)
+//                        showSimpleErrorAlert(_message: "No photos", _sender: sender)
                         return
                     }
                     
                     if photosArray.count == 0 {
-                        showSimpleErrorAlert(_message: "No photos", _sender: sender)
+//                        showSimpleErrorAlert(_message: "No photos", _sender: sender)
                         return
                     } else {
                         var selectedArray: [[String: AnyObject]]
@@ -82,6 +87,8 @@ class FlickrClient: NSObject {
                         } else {
                             selectedArray = photosArray.shuffle().choose(Constants.Flickr.imageCount)
                         }
+                        
+                        
                         
                         for photoItem in selectedArray {
                             
@@ -116,10 +123,25 @@ class FlickrClient: NSObject {
                                                  serverId: Int64(serverId)!,
                                                    secret: secret,
                                                       url: mediaUrl,
-                                                  context: (sender.fetchedResultsController?.managedObjectContext)!)
+                                                  context: context)
                             photo.pin = pin
                         }
-                        sender.stack.save()
+                        
+                        (UIApplication.shared.delegate as! AppDelegate).stack.save()
+                        
+//                        do {
+//                            try context.save()
+//                        } catch let error as NSError {
+//                            print(error.localizedDescription)
+//                        }
+                        
+//                        sender.stack.save()
+//                        DispatchQueue.main.async {
+//                            let mainStoryboard: UIStoryboard = UIStoryboard(name: "Main", bundle: nil)
+//                            let photosVC = mainStoryboard.instantiateViewController(withIdentifier: "photosViewController") as! PhotosViewController
+//                            photosVC.collectioinView.reloadData()
+//                        }
+                        
                     }
                     
                 })
@@ -171,14 +193,14 @@ class FlickrClient: NSObject {
 //        return self.taskForHttpRequest(request, completionHandlerForPOST: completionHandlerForPOST)
 //    }
     
-    func taskForHttpRequest(_ request: URLRequest, completionHandlerForPOST: @escaping (_ result: AnyObject?, _ error: NSError?) -> Void) -> URLSessionDataTask {
+    func taskForHttpRequest(_ request: URLRequest, completionHandler: @escaping (_ result: AnyObject?, _ error: NSError?) -> Void) -> URLSessionDataTask {
         
         let task = session.dataTask(with: request) { (data, response, error) in
             
             func sendError(_ error: String) {
                 print(error)
                 let userInfo = [NSLocalizedDescriptionKey : error]
-                completionHandlerForPOST(nil, NSError(domain: "taskForHttpRequest", code: 1, userInfo: userInfo))
+                completionHandler(nil, NSError(domain: "taskForHttpRequest", code: 1, userInfo: userInfo))
             }
             
             /* GUARD: Was there an error? */
@@ -220,7 +242,7 @@ class FlickrClient: NSObject {
                 return
             }
             
-            completionHandlerForPOST(photosDictionary as AnyObject?, nil)
+            completionHandler(photosDictionary as AnyObject?, nil)
         }
         
         /* 7. Start the request */

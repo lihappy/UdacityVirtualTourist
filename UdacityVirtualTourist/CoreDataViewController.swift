@@ -11,6 +11,8 @@ import CoreData
 
 class CoreDataViewController: UIViewController {
     
+    let stack = (UIApplication.shared.delegate as! AppDelegate).stack
+    
     var fetchedResultsController: NSFetchedResultsController<NSFetchRequestResult>? {
         didSet {
             fetchedResultsController?.delegate = self
@@ -45,7 +47,7 @@ extension CoreDataViewController: NSFetchedResultsControllerDelegate {
     
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
         
-        print("didChange anObject")
+        print("CoreDataViewController didChange anObject")
         
     }
 }
