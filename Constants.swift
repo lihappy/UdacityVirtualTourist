@@ -8,7 +8,30 @@
 
 import UIKit
 
+enum GetPhotoStatus {
+    case fail
+    case succeed
+    case noPhotos
+}
+
 struct Constants {
+    
+    static let NoPhotosMsg = "No photos"
+    
+    // MARK: Notification
+    struct Notification {
+        static let ErrorKey = "ErrorKey"
+        static let GetPhotoStatusKey = "GetPhotoStatusKey"
+        static let GetPhotosNotification = "GetPhotosNotification"
+    }
+    
+    // MARK: Map
+    struct Map {
+        static let CenterLat = "centerLat"
+        static let CenterLon = "centerLon"
+        static let SpanLat = "spanLat"
+        static let SpanLon = "spanLon"
+    }
     
     // MARK: Flickr
     struct Flickr {
@@ -44,12 +67,8 @@ struct Constants {
         static let APIKey = "ef3aaf2cf8f4dc71cf909cbf8c69794b"
         static let ResponseFormat = "json"
         static let DisableJSONCallback = "1" /* 1 means "yes" */
-//        static let GalleryPhotosMethod = "flickr.galleries.getPhotos"
-//        static let GalleryID = "5704-72157622566655097"
         static let MediumURL = "url_m"
         static let UseSafeSearch = "1"
-        
-//        static let PhotosForLocation = "flickr.photos.geo.photosForLocation"
     }
     
     // MARK: Flickr Response Keys
@@ -72,16 +91,5 @@ struct Constants {
     struct FlickrResponseValues {
         static let OKStatus = "ok"
     }
-    
-    
-    // FIX: As of Swift 2.2, using strings for selectors has been deprecated. Instead, #selector(methodName) should be used.
-    /*
-     // MARK: Selectors
-     struct Selectors {
-     static let KeyboardWillShow: Selector = "keyboardWillShow:"
-     static let KeyboardWillHide: Selector = "keyboardWillHide:"
-     static let KeyboardDidShow: Selector = "keyboardDidShow:"
-     static let KeyboardDidHide: Selector = "keyboardDidHide:"
-     }
-     */
+
 }

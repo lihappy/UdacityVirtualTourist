@@ -20,13 +20,7 @@ class CoreDataViewController: UIViewController {
             reloadData()
         }
     }
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
-    }
-
+        
     func executeSearch() {
         if let fc = fetchedResultsController {
             do {
@@ -38,16 +32,11 @@ class CoreDataViewController: UIViewController {
     }
     
     func reloadData() {
-        print("reloadData")
+        // Need to be 
     }
 
 }
 
 extension CoreDataViewController: NSFetchedResultsControllerDelegate {
-    
-    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
-        
-        print("CoreDataViewController didChange anObject")
-        
-    }
+  
 }

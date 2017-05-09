@@ -20,6 +20,7 @@ public class Photo: NSManagedObject {
             self.secret = secret
             self.serverId = serverId
             self.urlM = url
+            self.createDate = Date() as NSDate?
         } else {
             fatalError("Unable to find Entity name")
         }

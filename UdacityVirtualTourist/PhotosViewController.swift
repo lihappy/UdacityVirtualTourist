@@ -19,6 +19,9 @@ class PhotosViewController: CoreDataViewController {
     
     var annotation: MKAnnotation? = nil
     var pin: Pin? = nil
+    var enableNewCollectionButton: Bool? = true
+    
+    let activityIndicator = UIActivityIndicatorView.init(activityIndicatorStyle: UIActivityIndicatorViewStyle.gray)
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,14 +34,75 @@ class PhotosViewController: CoreDataViewController {
             self.mapView.centerCoordinate = self.annotation!.coordinate
         }
         
+        self.newCollectionButton.isEnabled = enableNewCollectionButton!
+        
         self.setFlowLayout()
+        
+        if !enableNewCollectionButton! {
+            self.activityIndicator.center = self.view.center
+            self.activityIndicator.hidesWhenStopped = true
+            self.view.addSubview(self.activityIndicator)
+            self.view.bringSubview(toFront: self.activityIndicator)
+            self.activityIndicator.startAnimating()
+        }
+        
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(PhotosViewController.dealPhotosNotification),
+                                               name: NSNotification.Name(rawValue: Constants.Notification.GetPhotosNotification),
+                                               object: nil)
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: Constants.Notification.GetPhotosNotification), object: nil)
+    }
+    
+    func dealPhotosNotification(_ notification: Notification) {
+        
+        DispatchQueue.main.async {
+            self.activityIndicator.stopAnimating()
+        }
+        
+        print("dealPhotosNotification")
+        guard let userInfo = notification.userInfo else {
+            return
+        }
+        print(userInfo)
+        guard let status = userInfo[Constants.Notification.GetPhotoStatusKey] as? GetPhotoStatus else {
+            return
+        }
+        
+        DispatchQueue.main.async {
+            if GetPhotoStatus.succeed == status {
+                self.reloadData()
+            } else if (GetPhotoStatus.fail == status) {
+                guard let errorMsg = userInfo[Constants.Notification.ErrorKey] as? String else {
+                    return
+                }
+                showSimpleErrorAlert(_message: errorMsg, _sender: self)
+            } else if (GetPhotoStatus.noPhotos == status){
+                showSimpleErrorAlert(_message: Constants.NoPhotosMsg, _sender: self)
+            }
+            
+            self.newCollectionButton.isEnabled = true
+        }
+        
+    }
+
 
     @IBAction func goBack(_ sender: Any) {
         self.dismiss(animated: true, completion: nil)
     }
 
     @IBAction func getNewCollection(_ sender: Any) {
+        self.newCollectionButton.isEnabled = false
+        
         pin?.photos = nil
         FlickrClient.sharedInstance().searchByLocation(pin!, (self.fetchedResultsController?.managedObjectContext)!)
     }
@@ -56,16 +120,21 @@ class PhotosViewController: CoreDataViewController {
     
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         print("did change")
+    }
+    
+    override func reloadData() {
+        print("phtos vc reload")
+        guard self.collectionView != nil else {
+            return
+        }
         self.collectionView.reloadData()
-        
-        
     }
     
     func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         print("will change")
     }
     
-    override func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
         
         print("didChange anObject")
         
@@ -79,6 +148,7 @@ extension PhotosViewController: UICollectionViewDelegate {
         //delete
         let photo = self.fetchedResultsController?.object(at: indexPath) as! Photo
         pin?.removeFromPhotos(photo)
+        self.reloadData()
         stack.save()
     }
     

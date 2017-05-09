@@ -20,6 +20,10 @@ class MapViewController: CoreDataViewController {
         let longPress: UILongPressGestureRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(MapViewController.addAnnotation))
         self.mapView.addGestureRecognizer(longPress)
         
+        // Restore center and zoom level for map
+        self.restoreMapview(self.mapView)
+        
+        // Add annotations
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Pin")
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "createDate", ascending: true)]
         
@@ -48,6 +52,30 @@ class MapViewController: CoreDataViewController {
     
     }
     
+    func restoreMapview(_ mapview: MKMapView) {
+        guard let centerLat = UserDefaults.standard.value(forKey: Constants.Map.CenterLat) as? Double else {
+            return
+        }
+        
+        guard let centerLon = UserDefaults.standard.value(forKey: Constants.Map.CenterLon) as? Double else {
+            return
+        }
+        
+        guard let spanLat = UserDefaults.standard.value(forKey: Constants.Map.SpanLat) as? Double else {
+            return
+        }
+        
+        guard let spanLon = UserDefaults.standard.value(forKey: Constants.Map.SpanLon) as? Double else {
+            return
+        }
+        
+        let coordinate = CLLocationCoordinate2D(latitude: centerLat, longitude: centerLon)
+        let span = MKCoordinateSpan(latitudeDelta: spanLat, longitudeDelta: spanLon)
+        let region = MKCoordinateRegion(center: coordinate, span: span)
+        mapview.region = region
+        
+    }
+    
     func addAnnotation(gestureReconizer: UILongPressGestureRecognizer) {
         if (gestureReconizer.state == UIGestureRecognizerState.began) {
             let location = gestureReconizer.location(in: mapView)
@@ -59,8 +87,8 @@ class MapViewController: CoreDataViewController {
 
             mapView.addAnnotation(annotation)
             
-            let pin: Pin = Pin(latitude: coordinate.latitude, longitude: coordinate.longitude, context: fetchedResultsController!.managedObjectContext)
-            print("created pin \(pin)")
+            let _ = Pin(latitude: coordinate.latitude, longitude: coordinate.longitude, context: fetchedResultsController!.managedObjectContext)
+            
             stack.save()
         }
         
@@ -70,6 +98,13 @@ class MapViewController: CoreDataViewController {
 }
 
 extension MapViewController: MKMapViewDelegate {
+    
+    func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
+        UserDefaults.standard.set(mapView.region.center.latitude, forKey: Constants.Map.CenterLat)
+        UserDefaults.standard.set(mapView.region.center.longitude, forKey: Constants.Map.CenterLon)
+        UserDefaults.standard.set(mapView.region.span.latitudeDelta, forKey: Constants.Map.SpanLat)
+        UserDefaults.standard.set(mapView.region.span.longitudeDelta, forKey: Constants.Map.SpanLon)
+    }
     
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         
@@ -104,9 +139,8 @@ extension MapViewController: MKMapViewDelegate {
             return
         }
         
-        
         let fr = NSFetchRequest<NSFetchRequestResult>(entityName: "Photo")
-        fr.sortDescriptors = [NSSortDescriptor(key: "photoId", ascending: true)]
+        fr.sortDescriptors = [NSSortDescriptor(key: "createDate", ascending: false)]
         
         let predicate = NSPredicate(format: "pin = %@", currentPin!)
         fr.predicate = predicate
@@ -118,6 +152,7 @@ extension MapViewController: MKMapViewDelegate {
         
         photosVC.pin = currentPin
         if (currentPin!.photos == nil || (currentPin!.photos?.count)! < 1) {
+            photosVC.enableNewCollectionButton = false
             FlickrClient.sharedInstance().searchByLocation(currentPin!, (self.fetchedResultsController?.managedObjectContext)!)
         }
         

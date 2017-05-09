@@ -22,6 +22,7 @@ extension Photo {
     @NSManaged public var secret: String?
     @NSManaged public var serverId: Int64
     @NSManaged public var urlM: String?
+    @NSManaged public var createDate: NSDate?
     @NSManaged public var pin: Pin?
 
 }

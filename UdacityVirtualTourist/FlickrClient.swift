@@ -40,18 +40,17 @@ class FlickrClient: NSObject {
         let _ = self.taskForHttpRequest(request) { (result, error) in
             
             if (error != nil) {
-                print(error?.localizedDescription)
-//                showSimpleErrorAlert(_message: (error?.localizedDescription)!, _sender: sender)
+                self.sendNotification([Constants.Notification.GetPhotoStatusKey: GetPhotoStatus.fail, Constants.Notification.ErrorKey: (error?.localizedDescription)!])
                 return
             }
             if ( result == nil) {
-//                print("")
-//                showSimpleErrorAlert(_message: "No photos", _sender: sender)
+                self.sendNotification([Constants.Notification.GetPhotoStatusKey: GetPhotoStatus.noPhotos])
                 return
             }
             
             let totalPages = result?[Constants.FlickrResponseKeys.Pages] as? Int
             if (totalPages == nil || totalPages! < 1) {
+                self.sendNotification([Constants.Notification.GetPhotoStatusKey: GetPhotoStatus.noPhotos])
                 return
             } else {
                 let randomPage = Int(arc4random_uniform(UInt32(totalPages!))) + 1
@@ -63,22 +62,22 @@ class FlickrClient: NSObject {
                 let _ = self.taskForHttpRequest(requestForRandomImages, completionHandler: { (randomResult, randomError) in
                     
                     guard (error == nil) else {
-//                        showSimpleErrorAlert(_message: (error?.localizedDescription)!, _sender: sender)
+                        self.sendNotification([Constants.Notification.GetPhotoStatusKey: GetPhotoStatus.fail, Constants.Notification.ErrorKey: (error?.localizedDescription)!])
                         return
                     }
                     guard (result != nil) else {
-//                        showSimpleErrorAlert(_message: "No photos", _sender: sender)
+                        self.sendNotification([Constants.Notification.GetPhotoStatusKey: GetPhotoStatus.noPhotos])
                         return
                     }
                     
-                    // Random select 50 of the photo array
+                    // Random select n from the photo array
                     guard var photosArray = result![Constants.FlickrResponseKeys.Photo] as? [[String: AnyObject]] else {
-//                        showSimpleErrorAlert(_message: "No photos", _sender: sender)
+                        self.sendNotification([Constants.Notification.GetPhotoStatusKey: GetPhotoStatus.noPhotos])
                         return
                     }
                     
                     if photosArray.count == 0 {
-//                        showSimpleErrorAlert(_message: "No photos", _sender: sender)
+                        self.sendNotification([Constants.Notification.GetPhotoStatusKey: GetPhotoStatus.noPhotos])
                         return
                     } else {
                         var selectedArray: [[String: AnyObject]]
@@ -87,8 +86,6 @@ class FlickrClient: NSObject {
                         } else {
                             selectedArray = photosArray.shuffle().choose(Constants.Flickr.imageCount)
                         }
-                        
-                        
                         
                         for photoItem in selectedArray {
                             
@@ -129,19 +126,9 @@ class FlickrClient: NSObject {
                         
                         (UIApplication.shared.delegate as! AppDelegate).stack.save()
                         
-//                        do {
-//                            try context.save()
-//                        } catch let error as NSError {
-//                            print(error.localizedDescription)
-//                        }
-                        
-//                        sender.stack.save()
-//                        DispatchQueue.main.async {
-//                            let mainStoryboard: UIStoryboard = UIStoryboard(name: "Main", bundle: nil)
-//                            let photosVC = mainStoryboard.instantiateViewController(withIdentifier: "photosViewController") as! PhotosViewController
-//                            photosVC.collectioinView.reloadData()
-//                        }
-                        
+                        // Send notifications
+                        self.sendNotification([Constants.Notification.GetPhotoStatusKey: GetPhotoStatus.succeed])
+  
                     }
                     
                 })
@@ -149,6 +136,12 @@ class FlickrClient: NSObject {
            
             
         }
+    }
+    
+    func sendNotification(_ userInfo: [AnyHashable : Any]) {
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: Constants.Notification.GetPhotosNotification),
+                                      object: nil,
+                                    userInfo: userInfo)
     }
     
     private func bboxString(_ latitude: Double, _ longitude: Double) -> String {
@@ -174,24 +167,6 @@ class FlickrClient: NSObject {
         
         return components.url!
     }
-    
-    
-    
-    
-    
-    
-    
-//    func startHttpTask(_ url: URL, method: String, parameters: NSDictionary, jsonBody: String, completionHandlerForPOST: @escaping (_ result: AnyObject?, _ error: NSError?) -> Void) -> URLSessionDataTask {
-//        
-//        let request = NSMutableURLRequest(url: url)
-//        request.httpMethod = method
-//        for parameter in parameters {
-//            request.addValue(parameter.value as! String, forHTTPHeaderField: parameter.key as! String)
-//        }
-//        request.httpBody = jsonBody.data(using: String.Encoding.utf8)
-//        
-//        return self.taskForHttpRequest(request, completionHandlerForPOST: completionHandlerForPOST)
-//    }
     
     func taskForHttpRequest(_ request: URLRequest, completionHandler: @escaping (_ result: AnyObject?, _ error: NSError?) -> Void) -> URLSessionDataTask {
         
@@ -229,7 +204,7 @@ class FlickrClient: NSObject {
                 sendError("Could not parse the data as JSON: '\(data)'")
                 return
             }
-//            print(parsedResult)
+
             /* GUARD: Did Flickr return an error (stat != ok)? */
             guard let stat = parsedResult[Constants.FlickrResponseKeys.Status] as? String, stat == Constants.FlickrResponseValues.OKStatus else {
                 sendError("Flickr API returned an error. See error code and message in \(parsedResult)")
@@ -252,7 +227,6 @@ class FlickrClient: NSObject {
     }
 
 }
-
 
 func showSimpleErrorAlert(_message: String, _sender: AnyObject) {
     DispatchQueue.main.async {
