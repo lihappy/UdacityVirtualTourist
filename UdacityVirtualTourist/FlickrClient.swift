@@ -39,11 +39,11 @@ class FlickrClient: NSObject {
         // Request total pages first
         let _ = self.taskForHttpRequest(request) { (result, error) in
             
-            if (error != nil) {
+            guard (error == nil) else {
                 self.sendNotification([Constants.Notification.GetPhotoStatusKey: GetPhotoStatus.fail, Constants.Notification.ErrorKey: (error?.localizedDescription)!])
                 return
             }
-            if ( result == nil) {
+            guard (result != nil) else {
                 self.sendNotification([Constants.Notification.GetPhotoStatusKey: GetPhotoStatus.noPhotos])
                 return
             }
@@ -70,7 +70,7 @@ class FlickrClient: NSObject {
                         return
                     }
                     
-                    // Random select n from the photo array
+                    // Random select n images from the photo array
                     guard var photosArray = result![Constants.FlickrResponseKeys.Photo] as? [[String: AnyObject]] else {
                         self.sendNotification([Constants.Notification.GetPhotoStatusKey: GetPhotoStatus.noPhotos])
                         return
@@ -87,10 +87,9 @@ class FlickrClient: NSObject {
                             selectedArray = photosArray.shuffle().choose(Constants.Flickr.imageCount)
                         }
                         
+                        let tmpPin: Pin = context.object(with: pin.objectID) as! Pin
                         for photoItem in selectedArray {
                             
-                            print("\(photoItem)")
-
                             guard let photoId = photoItem[Constants.FlickrResponseKeys.Id] as? String else {
                                 print("Invalid photoId")
                                 continue
@@ -121,10 +120,15 @@ class FlickrClient: NSObject {
                                                    secret: secret,
                                                       url: mediaUrl,
                                                   context: context)
-                            photo.pin = pin
+                            
+                            photo.pin = tmpPin
                         }
                         
-                        (UIApplication.shared.delegate as! AppDelegate).stack.save()
+                        do {
+                            try context.save()
+                        } catch let error as NSError {
+                            print(error.localizedDescription)
+                        }
                         
                         // Send notifications
                         self.sendNotification([Constants.Notification.GetPhotoStatusKey: GetPhotoStatus.succeed])
@@ -180,7 +184,7 @@ class FlickrClient: NSObject {
             
             /* GUARD: Was there an error? */
             guard (error == nil) else {
-                sendError("There was an error with your request: \(error)")
+                sendError("There was an error with your request: \(error?.localizedDescription)")
                 return
             }
             

@@ -132,6 +132,7 @@ extension CoreDataStack {
             if self.context.hasChanges {
                 do {
                     try self.context.save()
+                    print("context.save")
                 } catch {
                     fatalError("Error while saving main context: \(error)")
                 }
@@ -140,6 +141,7 @@ extension CoreDataStack {
                 self.persistingContext.perform() {
                     do {
                         try self.persistingContext.save()
+                        print("persistingContext save")
                     } catch {
                         fatalError("Error while saving persisting context: \(error)")
                     }

@@ -47,9 +47,6 @@ class MapViewController: CoreDataViewController {
             
             mapView.addAnnotations(annotations)
         }
-        
-        print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
-    
     }
     
     func restoreMapview(_ mapview: MKMapView) {
@@ -131,9 +128,6 @@ extension MapViewController: MKMapViewDelegate {
         let photosVC = self.storyboard?.instantiateViewController(withIdentifier: "photosViewController") as! PhotosViewController
         photosVC.annotation = view.annotation
         
-        print(view.annotation?.coordinate.latitude ?? 0.0)
-        print(view.annotation?.coordinate.longitude ?? 0.0)
-        
         let currentPin = self.searchPinByLatLon((view.annotation?.coordinate.latitude)!, (view.annotation?.coordinate.longitude)!)
         guard (currentPin != nil) else {
             return
@@ -149,11 +143,10 @@ extension MapViewController: MKMapViewDelegate {
         
         photosVC.fetchedResultsController = fc
         
-        
         photosVC.pin = currentPin
         if (currentPin!.photos == nil || (currentPin!.photos?.count)! < 1) {
             photosVC.enableNewCollectionButton = false
-            FlickrClient.sharedInstance().searchByLocation(currentPin!, (self.fetchedResultsController?.managedObjectContext)!)
+            FlickrClient.sharedInstance().searchByLocation(currentPin!, self.stack.backgroundContext)
         }
         
         show(photosVC, sender: true)

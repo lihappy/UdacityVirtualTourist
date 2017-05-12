@@ -32,7 +32,7 @@ class CoreDataViewController: UIViewController {
     }
     
     func reloadData() {
-        // Need to be 
+        // No operation. Subclass could customize the behavior.
     }
 
 }

@@ -69,11 +69,10 @@ class PhotosViewController: CoreDataViewController {
             self.activityIndicator.stopAnimating()
         }
         
-        print("dealPhotosNotification")
         guard let userInfo = notification.userInfo else {
             return
         }
-        print(userInfo)
+
         guard let status = userInfo[Constants.Notification.GetPhotoStatusKey] as? GetPhotoStatus else {
             return
         }
@@ -81,6 +80,7 @@ class PhotosViewController: CoreDataViewController {
         DispatchQueue.main.async {
             if GetPhotoStatus.succeed == status {
                 self.reloadData()
+                self.stack.save()
             } else if (GetPhotoStatus.fail == status) {
                 guard let errorMsg = userInfo[Constants.Notification.ErrorKey] as? String else {
                     return
@@ -101,10 +101,11 @@ class PhotosViewController: CoreDataViewController {
     }
 
     @IBAction func getNewCollection(_ sender: Any) {
+        self.activityIndicator.startAnimating()
         self.newCollectionButton.isEnabled = false
         
         pin?.photos = nil
-        FlickrClient.sharedInstance().searchByLocation(pin!, (self.fetchedResultsController?.managedObjectContext)!)
+        FlickrClient.sharedInstance().searchByLocation(pin!, stack.backgroundContext)
     }
     
     func setFlowLayout() {
@@ -123,22 +124,12 @@ class PhotosViewController: CoreDataViewController {
     }
     
     override func reloadData() {
-        print("phtos vc reload")
         guard self.collectionView != nil else {
             return
         }
         self.collectionView.reloadData()
     }
     
-    func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        print("will change")
-    }
-    
-    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
-        
-        print("didChange anObject")
-        
-    }
 
 }
 
